@@ -27,3 +27,8 @@ jobs:
     - run: npm install
     - run: npm run build --if-present
     - run: npm test
+    - name: upload source
+      run: scp -r .\build\* deploy@192.168.10.100:/tmp/tdrpg/
+    - name: deploy
+      run: ssh deploy@192.168.10.100 "./bin/deploy"
+
