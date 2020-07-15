@@ -1,14 +1,11 @@
 import React from "react";
-import { MapsTiles } from "../config/constant";
 import { 
     SPRITE_SIZE,
     TILE_DEFAULT,
     TILE_END,
     TILE_NOT_BUILDABLE,
     TILE_START
-} from "../config/constant"
-/** @todo Uncomment when merge will be executed */
-// import { TowerType } from "../model/Tower";
+} from "../../config/constant"
 
 /** Tile click Callback type */
 type onTileClickCallback = (param: MapTileState) => void
@@ -19,7 +16,7 @@ interface MapTileBase {
     /** y on map */
     y: number
     /** type tile */
-    type?: number
+    type?: string
 }
 /** MapTile property definition */
 interface MapTileProps extends MapTileBase {
@@ -62,7 +59,7 @@ class MapTile extends React.Component<MapTileProps, MapTileState> {
         this.state = {
             x: this.props.x,
             y: this.props.y,
-            type: undefined,
+            type: this.props.type,
             builded: false,
             style: this.initialStyle
         }
@@ -83,7 +80,6 @@ class MapTile extends React.Component<MapTileProps, MapTileState> {
      * @todo 2 - Make this more maintenable
      */
     private getSpriteTile() {
-        let sprite: string = 'sandybrown';
         switch (this.props.tile) {
             case 1:
                 return TILE_START
@@ -114,7 +110,7 @@ class MapTile extends React.Component<MapTileProps, MapTileState> {
     private handleMouseEnter = () => {
         if (!this.state.type && this.isBuildable())
             this.setState({
-                type: 1,
+                type: this.props.type,
                 style: { ...this.state.style, opacity: .8  }
             })
     }
@@ -144,7 +140,8 @@ class MapTile extends React.Component<MapTileProps, MapTileState> {
 }
 /** Map property definition */
 interface MapsProps {
-    currentType?: number
+    currentType?: string
+    rows: number[][]
 }
 /** Map state definition */
 interface MapsState {
@@ -161,7 +158,7 @@ export class Map extends React.Component<MapsProps, MapsState> {
     constructor(props: MapsProps) {
         super(props);
         this.state = {
-            rows: (new MapsTiles()).getBattleMap()
+            rows: this.props.rows
         }
     }
     /**
@@ -179,6 +176,7 @@ export class Map extends React.Component<MapsProps, MapsState> {
                 ((row:number[], y: number) => <div key={y}> {
                     row.map((tile:number, x: number) =>
                         <MapTile key={x} x={x} y={y} tile={tile}
+                            type={this.props.currentType}
                             onTileClick={this.handleClickTile} />
                     )
                 } </div>)
